@@ -1,8 +1,7 @@
 name: zsh_calendar
-description: A new Flutter package project.
+description: 日历组件，支持周日切换，支持滑动收缩，支持上下页跳转，支持跳到某个日期，支持边界效果， 日历中每个日期、周的widget都可自定义
 version: 0.0.1
-author:
-homepage:
+homepage: https://github.com/hellozsh/zsh_calendar
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -10,11 +9,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_screenutil: ^2.3.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_screenutil: ^2.3.1
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
