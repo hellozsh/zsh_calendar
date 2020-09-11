@@ -101,6 +101,8 @@ class _CalendarCarouselState extends State<CalendarCarousel> with TickerProvider
 
     _scrollPhysics = CalendarScrollPhysics(Status(), _calendarUtil);
 
+    _calendarController._scrollPhysics = _scrollPhysics;
+
     _monthRatio = _calendarUtil.getAspectRatio(widget.currentPageTime, show: CalendarShow.CalendarShowMonth);
     _weekRatio = _calendarUtil.getAspectRatio(widget.currentPageTime, show: CalendarShow.CalendarShowWeek);
     _aspectRatio =  _calendarUtil.calendarShow == CalendarShow.CalendarShowMonth ? _monthRatio : _weekRatio;
@@ -246,7 +248,6 @@ class _CalendarCarouselState extends State<CalendarCarousel> with TickerProvider
     if(_calendarUtil.calendarShow == CalendarShow.CalendarShowWeek) {
       time = DateTime(widget.currentPageTime.year, widget.currentPageTime.month, 1);
     }
-
 
     int year = time.year;
     int month = time.month;
@@ -472,20 +473,29 @@ class CalendarController extends ChangeNotifier {
   PageController _pageController;
   CalendarUtil _calendarUtil;
   UpdateOffset _updateOffset;
-
+  CalendarScrollPhysics _scrollPhysics;
   DateTime _currentTime;
 
   nextPage({
     Duration duration,
     Curve curve = Curves.bounceInOut
   }) {
+
+    int index = (_pageController.page + 1).toInt();
+    double width = ScreenUtil.screenWidth * index;
+    if(_scrollPhysics.status.minScrollExtent > width) {
+      return;
+    } else if(_scrollPhysics.status.maxScrollExtent < width) {
+      return;
+    }
+
     if (duration != null) {
       _pageController.nextPage(
           duration: duration,
           curve: curve
       );
     } else {
-      _pageController.jumpToPage((_pageController.page + 1).toInt());
+      _pageController.jumpToPage(index);
     }
   }
 
@@ -493,13 +503,22 @@ class CalendarController extends ChangeNotifier {
     Duration duration,
     Curve curve = Curves.bounceInOut
   }) {
+
+    int index = (_pageController.page - 1).toInt();
+    double width = ScreenUtil.screenWidth * index;
+    if(_scrollPhysics.status.minScrollExtent > width) {
+      return;
+    } else if(_scrollPhysics.status.maxScrollExtent < width) {
+      return;
+    }
+
     if (duration != null) {
       _pageController.previousPage(
           duration: duration,
           curve: curve
       );
     } else {
-      _pageController.jumpToPage((_pageController.page - 1).toInt());
+      _pageController.jumpToPage(index);
     }
   }
 
@@ -520,6 +539,13 @@ class CalendarController extends ChangeNotifier {
 
     _currentTime = dateTime;
     int index = _calendarUtil.indexOf(dateTime);
+
+    double width = ScreenUtil.screenWidth * index;
+    if(_scrollPhysics.status.minScrollExtent > width) {
+      return;
+    } else if(_scrollPhysics.status.maxScrollExtent < width) {
+      return;
+    }
 
     if (duration != null) {
       _pageController.animateToPage(
